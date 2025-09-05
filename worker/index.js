@@ -8,20 +8,20 @@ import { buildAdPrompt } from "./lib/promtBuilder.js";
 // import { buildAdPrompt } from "../lib/promptBuilder.js";
 import fs from "node:fs";
 import path from "node:path";
-import { v2 as cloudinary } from "cloudinary";
-
+// import { v2 as cloudinary } from "cloudinary";
+import {redisConnection} from "./lib/redis.js"
 
 
 configDotenv()
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+// cloudinary.config({
+//   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+//   api_key: process.env.CLOUDINARY_API_KEY,
+//   api_secret: process.env.CLOUDINARY_API_SECRET,
+// });
 
 
 console.log(process.env.GEMINI_API_KEY)
-const connection = new IORedis(process.env.REDIS_URL, { maxRetriesPerRequest: null });
+// const connection = new IORedis(process.env.REDIS_URL, { maxRetriesPerRequest: null });
 const GOOGLE_API_KEY = process.env.GEMINI_API_KEY;
 const ai = new GoogleGenAI({ apiKey: GOOGLE_API_KEY });
 
@@ -63,8 +63,8 @@ async function processJob(job) {
         const data = part.inlineData.data || "";
         const buffer = Buffer.from(data, "base64");
         // console.log(buffer)
-        const filePath = path.join(process.cwd(), "public", `gemini-test-${iteration}.png`);
-        fs.writeFileSync(filePath, buffer);
+        // const filePath = path.join(process.cwd(), "public", `gemini-test-${iteration}.png`);
+        // fs.writeFileSync(filePath, buffer);
 
         const result = await uploadBufferToCloudinary(buffer, iteration, job);
         console.log("result", result)
@@ -88,7 +88,7 @@ new Worker(
     console.log(result.urls)
     return result;
   },
-  { connection, concurrency: 3 }
+  { redisConnection, concurrency: 3 }
 ).on("completed", (job) => {
   console.log(`Job ${job.id} completed`);
   // Handle successful job completion
