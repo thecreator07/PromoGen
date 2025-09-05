@@ -63,8 +63,8 @@ async function processJob(job) {
         const data = part.inlineData.data || "";
         const buffer = Buffer.from(data, "base64");
         // console.log(buffer)
-        const filePath = path.join(process.cwd(), "public", `gemini-test-${iteration}.png`);
-        fs.writeFileSync(filePath, buffer);
+        // const filePath = path.join(process.cwd(), "public", `gemini-test-${iteration}.png`);
+        // fs.writeFileSync(filePath, buffer);
         
         const result = await uploadBufferToCloudinary(buffer, iteration, job);
         console.log("result", result)
