@@ -8,23 +8,24 @@ export const runtime = "nodejs"; // ensure Node (not edge)
 
 export async function POST(req: NextRequest) {
   try {
+
     const form = await req.formData();
     const product = form.get("product") as File | null;
     const template = form.get("template") as File | null;
-
+    const folderName = form.get("folderName") as string || "ads/inputs";
     const headline = (form.get("headline") as string) ?? "Go with Flow";
     const description = (form.get("description") as string) ?? "Best product for listening";
     const cta = (form.get("cta") as string) ?? "Shop Now";
     const iterations = Number(form.get("iterations") ?? 3);
-
+console.log(folderName, headline, description, cta, iterations, product, template);
     if (!product || !template) {
       return NextResponse.json({ error: "product and template files are required" }, { status: 400 });
     }
 
     // 1) Upload inputs to Cloudinary so worker can fetch them later
     const [prodRes, tmplRes] = await Promise.all([
-      uploadFileToCloudinary(product, "ads/inputs"),
-      uploadFileToCloudinary(template, "ads/inputs"),
+      uploadFileToCloudinary(product, `${folderName}/inputs`),
+      uploadFileToCloudinary(template, `${folderName}/inputs`),
     ]);
     const jobs: string[] = [];
     // 2) Enqueue job
@@ -35,9 +36,10 @@ export async function POST(req: NextRequest) {
           headline,
           description,
           cta,
+          folderName,
           iteration: index,
-          productUrl: prodRes.secure_url,
-          templateUrl: tmplRes.secure_url,
+          productUrl: prodRes.secure_url || "",
+          templateUrl: tmplRes.secure_url || "",
         },
         {
           removeOnComplete: { age: 24 * 3600, count: 1000 },
@@ -52,8 +54,8 @@ export async function POST(req: NextRequest) {
 
 
     return NextResponse.json({ jobIds: jobs });
-  } catch (e: any) {
-    console.error("enqueue error:", e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  } catch (e: unknown) {
+    console.error("enqueue error:", (e as Error).message);
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
 }

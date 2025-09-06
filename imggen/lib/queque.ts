@@ -12,6 +12,7 @@ export type AdsJobData = {
   iteration: number;          // e.g. 10
   productUrl: string;          // Cloudinary input url
   templateUrl: string;         // Cloudinary input url
+  folderName: string;          // Cloudinary output folder name
 };
 
 export type AdsJobResult = { urls: string[] };

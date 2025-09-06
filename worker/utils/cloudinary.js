@@ -6,10 +6,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function uploadBufferToCloudinary(buffer, iteration, job) {
+export async function uploadBufferToCloudinary(buffer, iteration, job, folderName) {
   return await new Promise((resolve, reject) => {
     cloudinary.uploader.upload_stream(
-      { folder: `ads/output/image-${iteration}-${job.id}`, resource_type: "auto" },
+      { folder: `${folderName}/output/image-${iteration}-${job.id}`, resource_type: "auto" },
       (error, result) => {
         if (error) {
           reject(error);

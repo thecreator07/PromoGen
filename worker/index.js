@@ -34,7 +34,7 @@ async function urlToBase64(url) {
 
 async function processJob(job) {
   try {
-    const { headline, description, cta, iteration, productUrl, templateUrl } = job.data;
+    const { headline, description, cta, iteration, productUrl, templateUrl, folderName } = job.data;
     // console.log(headline, description, cta, iterations, productUrl, templateUrl);
 
     const urls = [];
@@ -65,8 +65,8 @@ async function processJob(job) {
         // console.log(buffer)
         // const filePath = path.join(process.cwd(), "public", `gemini-test-${iteration}.png`);
         // fs.writeFileSync(filePath, buffer);
-        
-        const result = await uploadBufferToCloudinary(buffer, iteration, job);
+
+        const result = await uploadBufferToCloudinary(buffer, iteration, job, folderName);
         console.log("result", result)
         urls.push(result.url)
       }
