@@ -8,7 +8,6 @@ export const runtime = "nodejs"; // ensure Node (not edge)
 
 export async function POST(req: NextRequest) {
   try {
-
     const form = await req.formData();
     const product = form.get("product") as File | null;
     const template = form.get("template") as File | null;
